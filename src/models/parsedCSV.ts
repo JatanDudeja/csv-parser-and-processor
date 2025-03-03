@@ -2,9 +2,17 @@ import mongoose from "mongoose";
 
 const parsedCSVSchema = new mongoose.Schema(
   {
-    csvData: {
-      type: Object,
-    },
+    csvData: [
+      {
+        sNo: String,
+        productName: String,
+        images: [String],
+        compressedImages: {
+          type: [String],
+          required: false,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

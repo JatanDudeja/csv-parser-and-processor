@@ -2,7 +2,9 @@ import { Request, Response } from "express";
 import { convertCSVtoJSON } from "../utils/csvtojson.utl";
 import { ParsingHelper } from "../helpers/parsing.helper";
 import ParsedCSV from "../models/parsedCSV";
-import { processImages } from "./worker.controller";
+// import { processImages } from "./worker.controller";
+import { addToQueue } from "../utils/queue.util";
+import { ImageJob } from "../models/imageMetadata";
 
 export async function parseCSV(req: Request, res: Response) {
   console.log(">>>yoyo: ", req?.file);
@@ -33,12 +35,26 @@ export async function parseCSV(req: Request, res: Response) {
       csvData: parsedCSVJSON,
     });
 
-    const images = parsingHelper.getImages(
-      parsedCSVJSON,
-      parsedCSVStoredData?.id
-    );
+    const imageMetadata = [];
 
-    await processImages(images);
+    // parsedCSVStoredData?.['Input Image Urls'].forEach((entry) => {
+    //   entry.images.forEach((imageUrl) => {
+    //     const imageHash = crypto.createHash("sha256").update(imageUrl).digest("hex");
+    
+    //     imageJobs.push({
+    //       requestID: entry._id,
+    //       imageHash, // Unique identifier per image
+    //       originalUrl: imageUrl,
+    //       status: "pending",
+    //     });
+    //   });
+    // });
+    
+    // await ImageJob.insertMany(imageJobs);
+
+    await addToQueue({
+      id: parsedCSVStoredData?.id
+    });
 
     // const imageURLs = parsedCSVJSON.map({});
   }
